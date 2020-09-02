@@ -3,6 +3,7 @@ import {
   IPolynomialComponent
 } from '../utils/parseExpression';
 import { polynomialToString } from '../utils/polynomialToString';
+import { findHighestPrecision } from '../utils';
 
 export const integrate = (
   rawExpression: string,
@@ -12,11 +13,10 @@ export const integrate = (
     rawExpression,
     integrationVariable
   );
-  // const precision = findPrecision(polynomial);
-  // console.log(precision);
+  const precision = findHighestPrecision(polynomial.map(x => x.coefficient));
   const differentiated = integratePolynomial(polynomial);
 
-  return `${polynomialToString(differentiated)} + C`;
+  return `${polynomialToString(differentiated, precision)} + C`;
 };
 
 const integratePolynomial = (p: IPolynomialComponent[]) =>

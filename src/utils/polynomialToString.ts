@@ -1,11 +1,13 @@
 import { IPolynomialComponent } from './parseExpression';
-import { isNotEmpty } from '.';
 
-export const polynomialToString = (p: IPolynomialComponent[]) =>
+export const polynomialToString = (
+  p: IPolynomialComponent[],
+  precision: number
+) =>
   p
     .map((x, i) => {
       const coefficient =
-        i === 0 ? x.coefficient.toString() : extractCoefficient(x);
+        i === 0 ? x.coefficient.toString() : extractCoefficient(x, precision);
       switch (x.exponent) {
         case 0:
           return coefficient;
@@ -17,13 +19,27 @@ export const polynomialToString = (p: IPolynomialComponent[]) =>
     })
     .join(' ');
 
-const extractCoefficient = (x: IPolynomialComponent) =>
-  x.coefficient > 0 ? `+ ${x.coefficient}` : `- ${-x.coefficient}`;
+const extractCoefficient = (x: IPolynomialComponent, toPrecision: number) =>
+  x.coefficient > 0
+    ? `+ ${roundOff({ num: x.coefficient, toPrecision })}`
+    : `- ${roundOff({ num: -x.coefficient, toPrecision })}`;
 
-const findPrecision = (p: IPolynomialComponent[]) => {
-  const precisions = p
-    .map(x => x.coefficient.toString().split('.')[1])
-    .filter(isNotEmpty)
-    .map(x => x.length);
-  return Math.max(...precisions);
+const roundOff = ({
+  num,
+  toPrecision: precision
+}: {
+  num: number;
+  toPrecision: number;
+}) => num.toString(); //removeTrailingZeros(num.toFixed(precision));
+
+const removeTrailingZeros = (numberString: string): string => {
+  const { length } = numberString;
+  switch (numberString[length - 1]) {
+    case '0':
+      return removeTrailingZeros(numberString.slice(length - 1));
+    case '.':
+      return numberString.slice(length - 1);
+    default:
+      return numberString;
+  }
 };
