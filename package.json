@@ -13,6 +13,7 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-jss": "^10.4.0",
+    "react-latex": "^2.0.0",
     "react-scripts": "3.4.3",
     "typescript": "~3.7.2"
   },

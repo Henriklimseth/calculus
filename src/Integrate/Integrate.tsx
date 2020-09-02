@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { integrate } from './integrator';
 import { CalculationInput } from '../CalculationInput/CalculationInput';
+import { Result } from '../Result/Result';
 
 export const Integrate = () => {
-  const [inputExpression, setInputExpression] = useState('x^4+3x^3-4x^2-5x-1');
+  const [inputExpression, setInputExpression] = useState('4x^3+9x^2-8x-5');
   const [integrationVariable, setDIntegrationVariable] = useState('x');
   const [result, setResult] = useState('');
   const onIntegrate = () =>
@@ -20,7 +21,16 @@ export const Integrate = () => {
         />
         <button onClick={onIntegrate}>Kjør</button>
       </div>
-      <div>{result && <p>{result}</p>}</div>
+      <div>
+        {result && (
+          <Result
+            type="INTEGRATION"
+            variable={integrationVariable}
+            inputExpression={inputExpression}
+            computationResult={result}
+          />
+        )}
+      </div>
     </>
   );
 };
