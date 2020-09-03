@@ -2,16 +2,19 @@ import React, { useState } from 'react';
 import { integrate } from './integrator';
 import { CalculationInput } from '../CalculationInput/CalculationInput';
 import { Result } from '../Result/Result';
+import { createUseStyles } from 'react-jss';
+import { Button } from '../Button/Button';
 
 export const Integrate = () => {
   const [inputExpression, setInputExpression] = useState('4x^3+9x^2-8x-5');
   const [integrationVariable, setDIntegrationVariable] = useState('x');
   const [result, setResult] = useState('');
+  const { inputContainer } = useStyles();
   const onIntegrate = () =>
     setResult(integrate(inputExpression, integrationVariable));
   return (
     <>
-      <div>
+      <div className={inputContainer}>
         <CalculationInput
           label="Integrer"
           expression={inputExpression}
@@ -19,7 +22,7 @@ export const Integrate = () => {
           variable={integrationVariable}
           setVariable={setDIntegrationVariable}
         />
-        <button onClick={onIntegrate}>Kjør</button>
+        <Button label="Integrer" onClick={onIntegrate} />
       </div>
       <div>
         {result && (
@@ -34,3 +37,9 @@ export const Integrate = () => {
     </>
   );
 };
+
+const useStyles = createUseStyles({
+  inputContainer: {
+    marginTop: '30px',
+  },
+});

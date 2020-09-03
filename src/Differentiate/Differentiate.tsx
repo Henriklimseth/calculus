@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { differentiate } from './differentiator';
 import { CalculationInput } from '../CalculationInput/CalculationInput';
 import { Result } from '../Result/Result';
+import { Button } from '../Button/Button';
 
 export const Differentiate = () => {
   const [inputExpression, setInputExpression] = useState('x^4+3x^3-4x^2-5x-1');
@@ -19,7 +20,7 @@ export const Differentiate = () => {
           variable={differentiationVariable}
           setVariable={setDifferentiationVariable}
         />
-        <button onClick={onDifferentiate}>Kjør</button>
+        <Button label="Deriver" onClick={onDifferentiate} />
       </div>
       {result && (
         <Result
