@@ -1,9 +1,9 @@
 import {
   parseExpressionToPolynomial,
-  IPolynomialComponent
+  IPolynomialComponent,
 } from '../utils/parseExpression';
 import { polynomialToString } from '../utils/polynomialToString';
-import { findHighestPrecision } from '../utils';
+import { divideCoefficients } from '../utils/coefficient';
 
 export const integrate = (
   rawExpression: string,
@@ -13,16 +13,18 @@ export const integrate = (
     rawExpression,
     integrationVariable
   );
-  const precision = findHighestPrecision(polynomial.map(x => x.coefficient));
-  const differentiated = integratePolynomial(polynomial);
+  const integrated = integratePolynomial(polynomial);
 
-  return `${polynomialToString(differentiated, precision)} + C`;
+  return `${polynomialToString(integrated, integrationVariable)} + C`;
 };
 
 const integratePolynomial = (p: IPolynomialComponent[]) =>
-  p.map(integratePolynomialComponent).filter(x => x.coefficient !== 0);
+  p.map(integratePolynomialComponent).filter((x) => x.coefficient !== 0);
 
 const integratePolynomialComponent = (p: IPolynomialComponent) => ({
   exponent: p.exponent + 1,
-  coefficient: p.coefficient / (p.exponent + 1)
+  coefficient: divideCoefficients({
+    numerator: p.coefficient,
+    denominator: p.exponent + 1,
+  }),
 });

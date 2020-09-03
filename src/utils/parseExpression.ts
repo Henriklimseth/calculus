@@ -1,5 +1,6 @@
 import { symbols } from '../constants';
-import { isNotEmpty } from '.';
+import { isNotEmpty, canBeNumber } from '.';
+import { Coefficient, addCoefficients } from './coefficient';
 
 export const parseExpressionToPolynomial = (
   expressionString: string,
@@ -26,25 +27,33 @@ const extractPolynomial = (expressionString: string, variable: string) => {
       } else if (rawComponent.match(variable)) {
         const coefficient = extractCoefficient(rawComponent, variable);
         return [...acc, { exponent: 1, coefficient }];
+      } else if (canBeNumber(rawComponent)) {
+        return [...acc, { exponent: 0, coefficient: Number(rawComponent) }];
       }
-      return [...acc, { exponent: 0, coefficient: Number(rawComponent) }];
+      return [...acc, { exponent: 0, coefficient: rawComponent }];
     },
     []
   );
 };
 
 const simplifyPolynomial = (p: IPolynomialComponent[]) =>
-  p.reduce(simplifyReducer, []).filter(x => x.coefficient !== 0);
+  p.reduce(simplifyReducer, []).filter((x) => x.coefficient !== 0);
 
 const simplifyReducer = (
   accumulator: IPolynomialComponent[],
   current: IPolynomialComponent
 ) => {
-  const existing = accumulator.find(x => x.exponent === current.exponent);
+  const existing = accumulator.find((x) => x.exponent === current.exponent);
   return existing
     ? [
-        ...accumulator.filter(x => x.exponent !== current.exponent),
-        { ...existing, coefficient: existing.coefficient + current.coefficient }
+        ...accumulator.filter((x) => x.exponent !== current.exponent),
+        {
+          ...existing,
+          coefficient: addCoefficients(
+            existing.coefficient,
+            current.coefficient
+          ),
+        },
       ]
     : [...accumulator, current];
 };
@@ -64,7 +73,7 @@ const extractCoefficient = (rawComponent: string, variable: string) => {
 const extractArray = (expressionString: string) => {
   const stripped = removeSpaces(expressionString);
   const plusArray = stripped.split(symbols.plus);
-  const polynomialComponents = plusArray.flatMap(partialExpression => {
+  const polynomialComponents = plusArray.flatMap((partialExpression) => {
     const minusPartial = partialExpression.split(symbols.minus);
     return minusPartial.length > 0
       ? minusPartial.map((y, i) => (i === 0 ? y : `-${y}`))
@@ -77,5 +86,5 @@ const removeSpaces = (x: string) => x.split(' ').join('');
 
 export interface IPolynomialComponent {
   exponent: number;
-  coefficient: number;
+  coefficient: Coefficient;
 }

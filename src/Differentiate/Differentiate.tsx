@@ -9,7 +9,6 @@ export const Differentiate = () => {
   const [result, setResult] = useState('');
   const onDifferentiate = () =>
     setResult(differentiate(inputExpression, differentiationVariable));
-  console.log(result);
   return (
     <>
       <div>

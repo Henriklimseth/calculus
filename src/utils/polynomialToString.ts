@@ -1,45 +1,24 @@
 import { IPolynomialComponent } from './parseExpression';
+import { extractCoefficient } from './coefficient';
+import { canBeNumber } from '.';
 
 export const polynomialToString = (
   p: IPolynomialComponent[],
-  precision: number
+  variable: string
 ) =>
   p
     .map((x, i) => {
       const coefficient =
-        i === 0 ? x.coefficient.toString() : extractCoefficient(x, precision);
+        i === 0 ? x.coefficient.toString() : extractCoefficient(x);
       switch (x.exponent) {
         case 0:
           return coefficient;
         case 1:
-          return `${coefficient}x`;
+          return canBeNumber(coefficient)
+            ? `${coefficient}${variable}`
+            : `\\left( ${coefficient} \\right) ${variable}`;
         default:
-          return `${coefficient}x^${x.exponent}`;
+          return `${coefficient}${variable}^${x.exponent}`;
       }
     })
     .join(' ');
-
-const extractCoefficient = (x: IPolynomialComponent, toPrecision: number) =>
-  x.coefficient > 0
-    ? `+ ${roundOff({ num: x.coefficient, toPrecision })}`
-    : `- ${roundOff({ num: -x.coefficient, toPrecision })}`;
-
-const roundOff = ({
-  num,
-  toPrecision: precision
-}: {
-  num: number;
-  toPrecision: number;
-}) => num.toString(); //removeTrailingZeros(num.toFixed(precision));
-
-const removeTrailingZeros = (numberString: string): string => {
-  const { length } = numberString;
-  switch (numberString[length - 1]) {
-    case '0':
-      return removeTrailingZeros(numberString.slice(length - 1));
-    case '.':
-      return numberString.slice(length - 1);
-    default:
-      return numberString;
-  }
-};

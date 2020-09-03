@@ -17,6 +17,6 @@ export const App = () => {
 
 const useStyles = createUseStyles({
   app: {
-    textAlign: 'center'
-  }
+    textAlign: 'center',
+  },
 });
