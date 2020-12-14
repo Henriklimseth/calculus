@@ -1,30 +1,68 @@
 import {
-  parseExpressionToPolynomial,
-  IPolynomialComponent,
-} from '../utils/parseExpression';
-import { polynomialToString } from '../utils/polynomialToString';
-import { multiplyCoefficients } from '../utils/coefficient';
+  add,
+  Expression,
+  constant,
+  divide,
+  e,
+  exponentiate,
+  Component,
+  isExpression,
+  isVariable,
+  log,
+  multiply,
+  one,
+  subtract,
+  zero,
+} from '../expression/expression';
 
-export const differentiate = (
-  rawExpression: string,
-  differentiationVariable: string
-) => {
-  const polynomial = parseExpressionToPolynomial(
-    rawExpression,
-    differentiationVariable
-  );
-  const differentiated = differentiatePolynomial(polynomial);
-
-  return polynomialToString(differentiated, differentiationVariable);
+export const differentiate = (component: Expression): Expression => {
+  if (!isExpression(component)) {
+    return isVariable(component) ? one : zero;
+  }
+  const { type, left, right } = component;
+  switch (type) {
+    case '+':
+      return add(differentiate(left), differentiate(right));
+    case '-':
+      return subtract(differentiate(left), differentiate(right));
+    case '*':
+      return productRule(left, right);
+    case '/':
+      return divisorRule(left, right);
+    case '^':
+      return exponentRule(left, right);
+    case 'log':
+      return logRule(left, right);
+  }
 };
 
-const differentiatePolynomial = (p: IPolynomialComponent[]) =>
-  p.map(differentiatePolynomialComponent).filter((x) => x.coefficient !== 0);
+const productRule = (left: Expression, right: Expression): Expression =>
+  add(
+    multiply(differentiate(left), right),
+    multiply(left, differentiate(right))
+  );
 
-const differentiatePolynomialComponent = (p: IPolynomialComponent) =>
-  p.exponent === 0
-    ? { coefficient: 0, exponent: 0 }
-    : {
-        coefficient: multiplyCoefficients(p.coefficient, p.exponent),
-        exponent: p.exponent - 1,
-      };
+const divisorRule = (
+  numerator: Expression,
+  denominator: Expression
+): Component =>
+  divide(
+    subtract(
+      multiply(differentiate(numerator), denominator),
+      multiply(numerator, differentiate(denominator))
+    ),
+    exponentiate(denominator, constant(2))
+  );
+
+const exponentRule = (base: Expression, exponent: Expression): Expression =>
+  multiply(
+    add(
+      exponent,
+      multiply(log(e, base), multiply(differentiate(exponent), base))
+    ),
+    exponentiate(base, subtract(exponent, one))
+  );
+
+const logRule = (base: Expression, arg: Expression): Component =>
+  // NB kun for base e
+  divide(differentiate(arg), arg);

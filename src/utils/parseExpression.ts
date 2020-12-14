@@ -1,6 +1,6 @@
 import { symbols } from '../constants';
 import { isNotEmpty, canBeNumber } from '.';
-import { Coefficient, addCoefficients } from './coefficient';
+import { addCoefficients, Coefficient } from './coefficient';
 
 export const parseExpressionToPolynomial = (
   expressionString: string,

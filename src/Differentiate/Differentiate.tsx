@@ -1,35 +1,51 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { differentiate } from './differentiator';
-import { CalculationInput } from '../CalculationInput/CalculationInput';
+import {
+  add,
+  constant,
+  e,
+  exponentiate,
+  Expression,
+  log,
+  multiply,
+  one,
+  variable,
+  zero,
+} from '../expression/expression';
+import { expressionToLatexString } from '../expression/expressionToString';
 import { Result } from '../Result/Result';
-import { Button } from '../Button/Button';
 
 export const Differentiate = () => {
-  const [inputExpression, setInputExpression] = useState('x^4+3x^3-4x^2-5x-1');
-  const [differentiationVariable, setDifferentiationVariable] = useState('x');
-  const [result, setResult] = useState('');
-  const onDifferentiate = () =>
-    setResult(differentiate(inputExpression, differentiationVariable));
+  const x = variable('x');
+  const logx = log(e, x);
+  const three = constant(3);
+  const four = constant(4);
+  const pol = add(exponentiate(x, four), add(exponentiate(x, three), four));
+  const expressions: Expression[] = [
+    zero,
+    one,
+    x,
+    log(e, multiply(constant(2), x)),
+    multiply(constant(8), exponentiate(x, four)),
+    add(exponentiate(x, four), logx),
+    multiply(
+      add(exponentiate(x, four), logx),
+      add(exponentiate(x, three), multiply(three, x))
+    ),
+    exponentiate(x, pol),
+    log(e, pol),
+  ];
+
   return (
-    <>
-      <div>
-        <CalculationInput
-          label="Deriver"
-          expression={inputExpression}
-          setExpression={setInputExpression}
-          variable={differentiationVariable}
-          setVariable={setDifferentiationVariable}
-        />
-        <Button label="Deriver" onClick={onDifferentiate} />
-      </div>
-      {result && (
+    <div>
+      {expressions.map((expr) => (
         <Result
           type="DIFFERENTIATION"
-          variable={differentiationVariable}
-          inputExpression={inputExpression}
-          computationResult={result}
+          variable="x"
+          inputExpression={expressionToLatexString(expr)}
+          computationResult={expressionToLatexString(differentiate(expr))}
         />
-      )}
-    </>
+      ))}
+    </div>
   );
 };

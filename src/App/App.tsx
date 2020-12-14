@@ -11,7 +11,7 @@ export const App = () => {
     <div className={app}>
       <Header />
       <Differentiate />
-      <Integrate />
+      {/* <Integrate /> */}
     </div>
   );
 };
