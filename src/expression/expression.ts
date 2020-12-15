@@ -25,6 +25,10 @@ export const isVariable = (expression: Expression): expression is Variable =>
 export const isExpression = (expression: Expression): expression is Component =>
   !isConstant(expression) && !isVariable(expression);
 
+export const isArithmetic = (expression: Expression) =>
+  isExpression(expression) &&
+  (expression.type === '+' || expression.type === '-');
+
 export const variable = (name: string): Variable => ({ name });
 
 export const constant = (num: number): Constant => ({ value: num });
